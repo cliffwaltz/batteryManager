@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="../resources/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/icon.css">
+    <script type="text/javascript" src="../resources/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../resources/js/jquery.easyui.min.js"></script>
+</head>
+
+<body>
+
+<ul id="menu_tree"></ul>
+
+<!--<form id="updateRoleMenuform" action="../role/updateRoleMenu" method="post" style="padding: 30px">-->
+<!--    <input type="hidden" id="RoleMenu_key" name="key">-->
+<!--</form>-->
+
+<div style="position:absolute;left:60px;top:450px;text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitUpdate()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script >
+
+    var obj=$('#role_menu_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    //
+    // $("#RoleMenu_key").val(id);
+
+    $("#menu_tree").tree({
+        url:"../menu/findalltest",
+        checkbox:true,
+        onLoadSuccess:function (node, data) {
+            $.ajax({
+                url:"../role/findRoleMenubyid",
+                type:"get",
+                async: false,
+                dataType:"json",
+                data:{
+                    "id":id
+                },
+                success:function (res) {
+                    $.each(res,function (i,data) {
+                        // var roleid="#"+data.id;
+                        // $(roleid).prop("checked",true);
+                        var node = $('#menu_tree').tree('find', data.id);
+                        $("#menu_tree").tree('check',node.target);
+                    })
+
+                },
+                error:function(){
+                    alert("服务器出错");
+                }
+            })
+        }
+    });
+
+</script>
+<script >
+
+    //     $.ajax({
+    //         url:"../menu/findall",
+    //         type:"get",
+    //         async: false,
+    //         dataType:"json",
+    //         success:function (res) {
+    //
+    //             var content = "";
+    //
+    //             $.each(res,function (i,data) {
+    //                 content+="<div style='height:30px;width:100px;float: left'> <input  type=\"checkbox\" id=\""+data.id+"\"  name=\"menus\" value=\""+data.id+"\" style='border: 1px solid lightyellow;width: 15px;height: 15px'><label for=\""+data.id+"\">"+data.name+"</label></div>";
+    //                 if(i%2==1){
+    //                     content+="<br>";
+    //                 }
+    //             });
+    //
+    //
+    //             $("#updateRoleMenuform").append(content);
+    //
+    //
+    //         },
+    //         error:function(){
+    //             alert("服务器出错");
+    //         }
+    //     })
+
+
+    function submitUpdate() {
+        var nodes = $('#menu_tree').tree('getChecked');
+        var menus = [];
+        $.each(nodes,function (i, data) {
+            menus.push(data.id);
+        })
+        $.ajax({
+            url:"../role/updateRoleMenu",
+            type:"get",
+            async: false,
+            dataType:"json",
+            data:{
+                "key":id,
+                "menus":menus
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#role_menu_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrole').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrole').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        })
+
+    }
+
+
+    function submitForm(){
+        $('#updateRoleMenuform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#role_menu_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrole').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrole').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updateRoleMenuform').form('clear');
+    }
+
+
+</script>
+</body>
+</html>

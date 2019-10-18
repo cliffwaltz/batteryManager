@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="../resources/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/icon.css">
+    <script type="text/javascript" src="../resources/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../resources/js/jquery.easyui.min.js"></script>
+</head>
+
+
+<body>
+
+
+<form id="updateAdminRoleform" action="../admin/updateAdminRole" method="post" style="padding: 30px">
+    <input type="hidden" id="AdminRole_key" name="key">
+</form>
+
+
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的adminid
+    var obj=$('#admin_role_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    $("#AdminRole_key").val(id);
+
+
+
+    $(function () {
+        $.ajax({
+            url:"../role/findall",
+            type:"get",
+            async: false,
+            dataType:"json",
+            success:function (res) {
+
+                var content = "";
+
+                $.each(res,function (i,data) {
+                    content+="<div style=\"margin-bottom:20px\"><input  class='easyui-checkbox' label=\""+data.name+"\" id=\""+data.id+"\"  name=\"roles\" value=\""+data.id+"\" style='width: 15px;height: 15px'></div>";
+
+                });
+
+
+                $("#updateAdminRoleform").append(content);
+
+
+            },
+            error:function(){
+                alert("服务器出错");
+            }
+        })
+
+
+
+            $.ajax({
+                url:"../admin/findAdminRolebyid",
+                type:"get",
+                dataType:"json",
+                data:{
+                    "id":id
+                },
+                success:function (res) {
+                    $.each(res,function (i,data) {
+                        var roleid="#"+data.id;
+                        $(roleid).checkbox("check");
+                    })
+
+                },
+                error:function(){
+                    alert("服务器出错");
+                }
+            })
+
+
+
+    })
+
+
+    function submitForm(){
+        $('#updateAdminRoleform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#admin_role_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改用户信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listadmin').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改用户信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listadmin').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updateAdminRoleform').form('clear');
+    }
+
+
+</script>
+</body>
+</html>

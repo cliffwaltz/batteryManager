@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="addroleform" action="../role/addrole" method="post" style="padding: 50px">
+
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" name="name"  style="width:250px"
+               data-options="label:'角色名:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <select id="aaa" class="easyui-combobox" name="available"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="状态" style="width:250px">
+            <option value="0">不可用</option>
+            <option value="1">可用</option>
+        </select>
+    </div>
+
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+
+    function submitForm() {
+        $('#addroleform').form('submit', {
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success: function (data) {
+                if ($.trim(data) == "true") {
+                    $("#add_role_dialog").dialog("close", true);
+                    $.messager.show({
+                        title: '添加角色信息',
+                        msg: '添加成功！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listrole').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                } else {
+                    $.messager.show({
+                        title: '添加角色信息',
+                        msg: '添加失败！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listrole').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+
+    function clearForm() {
+        $('#addroleform').form('clear');
+    }
+
+
+
+</script>
+</body>
+</html>

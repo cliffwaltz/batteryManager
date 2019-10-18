@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.RecordMapper">
+
+<!--    //根据id查询电池
+    public record findRecordById(String id);
+-->
+    <select id="findRecordById" resultType="cn.ys.entity.Record">
+        select * from record where id=#{id}
+    </select>
+
+<!--        //查询所有电池信息
+    public List<Record> findAll();-->
+    <select id="findAll" resultType="cn.ys.entity.Record">
+        select * from record order by time limit #{limit1},#{limit2}
+    </select>
+
+<!--        //查询记录总数
+    public int findTotal();-->
+    <select id="findTotal" resultType="Integer">
+        select count(*) from record
+    </select>
+
+<!--        //增加电池信息
+    public boolean addRecord(Record record);-->
+    <insert id="addRecord">
+        insert into record(user_id,car_id,type,time,code) values(#{userId},#{carId},#{type},now(),#{code})
+    </insert>
+
+<!--        //删除电池by id
+    public boolean deleteRecordById(String id);-->
+    <delete id="deleteRecordById">
+        delete from record where id=#{id}
+    </delete>
+
+<!--        //修改电池信息
+    public boolean updateRecord(@Param("record") Record record,@Param("key") String key);-->
+    <update id="updateRecord">
+        update record set user_id=#{record.userId},car_id=#{record.carId},type=#{record.type},code=#{record.code},time=now()  where id=#{key};
+    </update>
+</mapper>

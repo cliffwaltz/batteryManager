@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updatebatteryform" action="../battery/updatebattery" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <select id="type" class="easyui-combobox" name="type"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="电池类型" style="width:250px">
+            <option value="1">1类型</option>
+            <option value="2">2类型</option>
+            <option value="3">3类型</option>
+        </select>
+    </div>
+    <div style="margin-bottom:20px">
+        <select id="state" class="easyui-combobox" name="state"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="状态" style="width:250px">
+            <option value="new">new</option>
+            <option value="old">old</option>
+        </select>
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="power" class="easyui-numberbox" name="power" style="width:250px"
+               data-options="label:'电量:',labelPosition: 'top',required:true,min:0">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="code" class="easyui-textbox" name="code" addClear style="width:250px"
+               data-options="label:'二维码:',labelPosition: 'top'">
+    </div>
+    <input type="hidden" id="battery_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的batteryid
+    var obj=$('#update_battery_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    $("#battery_key").val(id);
+    // alert("hidden:"+$("#battery_key").val());
+    //$("input[name='batteryId']").val(id);
+    // $('#birthday').datebox('setValue', '6/1/2012');   // 设置日期输入框的值
+    // alert($('#birthday').datebox('getValue'));
+
+
+    $.ajax({
+        url:"../battery/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "id":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['batteryId']);
+
+            //var batteryid=res.batteryId;
+            //document.getElementById("cid").value=batteryid;
+            //$("input[name='batteryId']").textbox('setValue',res.batteryId);
+            // alert(res.birthday.substring(0,10).trim());
+            //$('#id').textbox('setValue',res.id);
+
+
+            $("#type").combobox("setValue",res.type);
+            $("#state").combobox("setValue",res.state);
+            $("#power").textbox("setValue",res.power);
+            $("#code").textbox("setValue",res.code);
+
+            // var date = res.birthday;
+            // alert(date);
+            // alert(typeof date);
+            //$("#birthday").datebox('setValue',res.birthday.substring(0,10).trim());
+
+            // $("#birthday").datebox("setValue", "2000-11-12");
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updatebatteryform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_battery_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改电池信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listbattery').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改电池信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listbattery').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updatebatteryform').form('clear');
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

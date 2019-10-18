@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<table id="listuser"></table>
+<div id="add_user_dialog"></div>
+<div id="update_user_dialog"></div>
+<div id="tb_user">
+    <a href="#" class="easyui-linkbutton" onclick=addUser() data-options="iconCls:'icon-add',plain:true">添加</a>
+    <br>
+    <input id="search_user_id" class="easyui-textbox" prompt="身份证号" data-options="label:'身份证号:'" style="width:210px">
+    <a href="#" class="easyui-linkbutton"  onclick=searchUserById() data-options="iconCls:'icon-search',plain:true">搜索</a>
+    <!--    <input type="text" placeholder="车牌号"/>-->
+    <!--    <a id="search" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</a>-->
+</div>
+
+<script>
+    $('#listuser').datagrid({
+        url:'../user/findall',
+        method:"get",
+        columns:[[
+            {field:'id',title:'身份证号',width:100},
+            {field:'name',title:'姓名',width:100},
+            {field:'birthday',title:'出生日期',width:100},
+            {
+                field: 'xxx', title: '操作', width: 100,
+                formatter: function (value, row, index) {
+                    return "<a href='#' onclick=updateUser('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=deluser('"+row.id+"')>删除</a>"
+                }
+            }
+        ]],
+        fit:true,
+        fitColumns:true,
+        striped:true,
+        //分页工具
+        pagination:true,
+        pageList:[5,10,15,20,25,30],
+        pageSize:10,
+        pageNumber:1,
+        toolbar: '#tb_user'
+        // toolbar: [{
+        //     iconCls: 'icon-edit',
+        //     handler: function(){alert('编辑按钮')}
+        // },'-',{
+        //     iconCls: 'icon-add',
+        //     handler: function(){alert('增加按钮')}
+        // }]
+    });
+
+
+</script>
+<script>
+
+    function addUser() {
+        $("#add_user_dialog").dialog({
+            modal: true,
+            title: '添加车主信息',
+            width: 450,
+            height: 400,
+            closed: false,
+            href: '../pages/adduser.html'
+        });
+    }
+
+    function updateUser(id) {
+        $("#update_user_dialog").dialog({
+            modal: true,
+            title: '修改车主信息',
+            width: 450,
+            height: 400,
+            closed: false,
+            href: '../pages/updateuser.html',
+            queryParams:{
+                "id":id
+            }
+        });
+    }
+
+    function deluser(id) {
+        $.ajax({
+            url:"../user/deletebyid",
+            type:"post",
+            data:{
+                "id":id
+            },
+            success:function (res) {
+                if($.trim(res)=="true"){
+                    $.messager.show({
+                        title:'删除车主信息',
+                        msg:'删除成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                }else{
+                    $.messager.show({
+                        title:'删除车主信息',
+                        msg:'删除失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                }
+
+            },
+            error:function (res) {
+                alert("error");
+            }
+        })
+    }
+
+    function searchUserById() {
+        var search_user_id = $("#search_user_id").val();
+        // alert(search_car_id);
+        var search = new RegExp(search_user_id);
+        // if(seacher.test("1234")){
+        //     alert("true");
+        // }else{
+        //     alert("false");
+        // }
+
+        $('#listuser').datagrid({
+            url:'../user/findall',
+            method:"get",
+            rowStyler: function(index,row){
+                if (search.test(row.id)){
+
+                    return '';
+                }else{
+
+                    return 'display:none';
+                }
+            },
+            columns:[[
+                {field:'id',title:'身份证号',width:100},
+                {field:'name',title:'姓名',width:100},
+                {field:'birthday',title:'出生日期',width:100},
+                {
+                    field: 'xxx', title: '操作', width: 100,
+                    formatter: function (value, row, index) {
+                        return "<a href='#' onclick=updateUser('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=deluser('"+row.id+"')>删除</a>"
+                    }
+                }
+            ]],
+
+            fit:true,
+            fitColumns:true,
+            striped:true,
+            //分页工具
+            pagination:true,
+            pageList:[5,10,15,20,25,30],
+            pageSize:10,
+            pageNumber:1,
+            toolbar: '#tb_user'
+            // toolbar: [{
+            //     iconCls: 'icon-edit',
+            //     handler: function(){alert('编辑按钮')}
+            // },'-',{
+            //     iconCls: 'icon-add',
+            //     handler: function(){alert('增加按钮')}
+            // }]
+        });
+    }
+</script>
+</body>
+</html>

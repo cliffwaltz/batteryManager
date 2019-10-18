@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.MenuMapper">
+
+
+<!--    List<Menu> findAll();-->
+    <select id="findAll" resultType="cn.ys.entity.Menu">
+        select * from menu order by id
+    </select>
+
+<!--    List<Menu> findSonMenusById(Integer id);-->
+    <select id="findSonMenusById" resultType="cn.ys.entity.Menu">
+        select * from menu where parent_id=#{id}
+    </select>
+
+<!--    List<Menu> findParentMenusById(Integer id);-->
+    <select id="findParentMenusById" resultType="cn.ys.entity.Menu">
+        select * from menu where id=#{parentId}
+    </select>
+
+<!--        List<Menu> findRoleMenubyid(Integer id);-->
+    <select id="findRoleMenubyid" resultType="cn.ys.entity.Menu">
+        select * from menu
+        where id in
+        (select menu_id from role_menu
+        where role_id=#{id})
+    </select>
+
+<!--        List<Menu> findAllPages(@Param("limit1") Integer limit1, @Param("limit2") Integer limit2);
+
+    int findTotal();-->
+    <select id="findAllPages" resultType="cn.ys.entity.Menu">
+        select * from menu order by id limit #{limit1},#{limit2}
+    </select>
+
+    <select id="findTotal" resultType="Integer">
+        select count(*) from menu
+    </select>
+
+
+<!--        boolean addMenu(Menu menu);
+
+    Menu findMenuById(Integer id);
+
+    boolean updateMenu(Menu menu, Integer key);
+
+    boolean deleteMenuById(Integer id);-->
+    <insert id="addMenu">
+        insert into menu(name,type,url,parent_id,level,sort,available) values(#{name},#{type},#{url},#{parentId},#{level},#{sort},#{available})
+    </insert>
+
+    <select id="findMenuById" resultType="cn.ys.entity.Menu">
+        select * from menu where id=#{id}
+    </select>
+
+    <update id="updateMenu">
+        update menu set
+         name=#{menu.name},type=#{menu.type},url=#{menu.url},parent_id=#{menu.parentId},level=#{menu.level},sort=#{menu.sort},available=#{menu.available}
+         where id=#{key}
+    </update>
+
+    <delete id="deleteMenuById" >
+        delete from menu where id=#{id}
+    </delete>
+
+
+
+</mapper>

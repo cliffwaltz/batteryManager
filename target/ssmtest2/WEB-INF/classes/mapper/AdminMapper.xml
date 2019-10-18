@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.AdminMapper">
+
+
+<!--    public Admin getAdminById(String id);-->
+    <select id="getAdminByName" resultType="cn.ys.entity.Admin">
+        select * from admin where username=#{username}
+    </select>
+
+<!--        //根据用户id获取菜单
+    List<Menu> getMenusById(Integer id);-->
+    <select id="getMenusById" resultType="cn.ys.entity.Menu">
+        select * from menu
+        where id in
+        (select menu_id from role_menu
+        where role_id in
+        (select role_id from admin_role
+        where admin_id=#{id}))
+    </select>
+
+
+    <!--        //查询所有用户信息
+    public List<Admin> findAll();-->
+    <select id="findAll" resultType="cn.ys.entity.Admin">
+        select * from admin order by id limit #{limit1},#{limit2}
+    </select>
+
+    <!--        //查询记录总数
+        public int findTotal();-->
+    <select id="findTotal" resultType="Integer">
+        select count(*) from admin
+    </select>
+
+<!--   //增加用户 boolean addAdmin(Admin admin);-->
+    <insert id="addAdmin">
+        insert into admin(username,password,available) values(#{username},#{password},#{available})
+    </insert>
+
+<!--        Admin getAdminById(String id);-->
+    <select id="getAdminById" resultType="cn.ys.entity.Admin">
+        select * from admin where id=#{id}
+    </select>
+
+<!--        boolean updateAdmin(Admin admin, Integer key);
+
+    boolean deleteAdminById(String id);-->
+    <delete id="deleteAdminById">
+        delete from admin where id=#{id}
+    </delete>
+
+<!--    boolean updateAdmin(Admin admin, Integer key); -->
+    <update id="updateAdmin">
+        update admin set username=#{admin.username},password=#{admin.password},available=#{admin.available} where id=#{key}
+    </update>
+
+<!--    boolean addRoles(@Param("addroles") List<Integer> addroles,@Param("key") Integer key);
+
+    boolean deleteRoles(@Param("oldroles") List<Integer> oldroles,@Param("key") Integer key);-->
+    <insert id="addRoles">
+        insert into admin_role(admin_id,role_id)
+        values
+        <foreach collection="addroles" separator="," item="role_id">
+            (#{key},#{role_id})
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoles">
+        delete from admin_role
+        <where>
+            admin_id=#{key} and
+            <if test="oldroles!=null and oldroles.size()>0">
+                role_id in(
+                <foreach collection="oldroles" separator="," item="role_id">
+                  #{role_id}
+               </foreach>)
+            </if>
+        </where>
+
+    </delete>
+</mapper>

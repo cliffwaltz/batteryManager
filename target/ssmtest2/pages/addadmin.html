@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="addadminform" action="../admin/addadmin" method="post" style="padding: 50px">
+
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" name="username"  style="width:250px"
+               data-options="label:'用户名:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="pwd" class="easyui-passwordbox" name="password"  style="width:250px"
+               data-options="label:'密码:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-passwordbox" name="rpassword"  style="width:250px"
+               data-options="label:'确认密码:',labelPosition: 'top',required:true" validtype="equals['#pwd']">
+    </div>
+    <div style="margin-bottom:20px">
+        <select id="aaa" class="easyui-combobox" name="available"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="状态" style="width:250px">
+            <option value="0">不可用</option>
+            <option value="1">可用</option>
+        </select>
+    </div>
+
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+
+
+    // extend the 'equals' rule
+    $.extend($.fn.validatebox.defaults.rules, {
+        equals: {
+            validator: function(value,param){
+                return value == $(param[0]).val();
+            },
+            message: '密码不一致'
+        }
+    });
+
+    function submitForm() {
+        $('#addadminform').form('submit', {
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success: function (data) {
+                if ($.trim(data) == "true") {
+                    $("#add_admin_dialog").dialog("close", true);
+                    $.messager.show({
+                        title: '添加用户信息',
+                        msg: '添加成功！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listadmin').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                } else {
+                    $.messager.show({
+                        title: '添加用户信息',
+                        msg: '添加失败！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listadmin').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+
+    function clearForm() {
+        $('#addadminform').form('clear');
+    }
+
+
+
+</script>
+</body>
+</html>

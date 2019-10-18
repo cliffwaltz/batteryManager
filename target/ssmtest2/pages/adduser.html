@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="adduserform" action="../user/adduser" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input  class="easyui-textbox" name="id" addClear style="width:250px" data-options="label:'身份证号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input  class="easyui-textbox" name="name" style="width:250px" data-options="label:'姓名:',labelPosition: 'top',required:true">
+    </div>
+
+    <div style="margin-bottom:20px">
+        <input type="text" name="birthday" class="easyui-datebox" editable="false" data-options="label:'出生日期:',labelPosition: 'top',required:true">
+    </div>
+    </form>
+    <div style="text-align:center;padding:5px 0">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+    </div>
+
+<script>
+
+
+    $.fn.datebox.defaults.formatter = function(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        return y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d);
+    };
+    //
+    $.fn.datebox.defaults.parser = function(s) {
+        if (s) {
+            var a = s.split('-');
+            var d = new Date(parseInt(a[0]), parseInt(a[1]) - 1, parseInt(a[2]));
+            return d;
+        } else {
+            return new Date();
+        }
+
+    };
+
+
+    function submitForm(){
+        $('#adduserform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#add_user_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'添加车主信息',
+                        msg:'添加成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'删除车主信息',
+                        msg:'删除失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#adduserform').form('clear');
+    }
+
+
+
+</script>
+</body>
+</html>

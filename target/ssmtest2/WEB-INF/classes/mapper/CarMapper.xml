@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.CarMapper">
+
+<!--        //根据Id查询车辆信息
+    public Car findOneById(String carid);-->
+    <select id="findOneById"  resultMap="car">
+        select * from car where car_id=#{carid}
+    </select>
+
+<!--//    查询所有的车辆信息
+    public List<Car> findAll();-->
+    <resultMap id="car" type="cn.ys.entity.Car">
+        <id column="car_id" property="carId"></id>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="weight" property="weight"/>
+        <result column="battery_type" property="batteryType"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="car">
+        select * from car limit #{limit1},#{limit2}
+    </select>
+
+<!--    //查询记录数
+    public int selectCount();-->
+    <select id="selectCount" resultType="Integer">
+        select count(*) from car
+    </select>
+
+<!--        //删除车辆by id
+    public boolean deleteCarById(String id);-->
+    <delete id="deleteCarById">
+        delete from car where car_id=#{carid}
+    </delete>
+
+<!--        //添加车辆信息
+    public boolean addCar(Car car);-->
+    <insert id="addCar">
+        insert into car(car_id,weight,battery_type) values(#{carId},#{weight},#{batteryType})
+    </insert>
+
+<!--        //修改车辆信息
+    public boolean updateCar(@Param("car") Car car,@Param("key") String key);-->
+    <update id="updateCar">
+        update car set car_id=#{car.carId},weight=#{car.weight},battery_type=#{car.batteryType} where car_id=#{key}
+    </update>
+
+<!--        //根据carid查找车主
+    User FindUserByCarId(String carId);-->
+    <select id="FindUserByCarId" resultType="cn.ys.entity.User">
+        select * from user where id=(select user_id from car where  car_id=#{carId})
+    </select>
+
+<!--        //update car set user_id=#{user.id},user_name=#{user.name} where car_id=#{carId}
+    //根据车辆id修改车辆信息中的车主信息
+    boolean updateCarBindUser(User user, String carId);-->
+    <update id="updateCarBindUser">
+        update car set user_id=#{user.id},user_name=#{user.name} where car_id=#{carId}
+    </update>
+
+<!--        //update car set user_name=#{name} where user_id=#{id}
+    //修改由于车主信息变化而发生变化的车辆信息
+    boolean updateCarsCauseUser(User user);-->
+    <update id="updateCarsCauseUser">
+        update car set user_id=#{user.id},user_name=#{user.name} where user_id=#{userId}
+    </update>
+
+<!--        //解绑车主信息
+    boolean unBind(String carId);-->
+    <update id="unBind">
+        update car set user_id='',user_name='' where car_id=#{carId}
+    </update>
+</mapper>

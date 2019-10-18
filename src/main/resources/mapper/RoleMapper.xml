@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.RoleMapper">
+
+
+
+<!--        List<Role> findAll();-->
+    <select id="findAll" resultType="cn.ys.entity.Role">
+        select * from role order by id
+    </select>
+
+<!--根据用户id查询角色
+List<Role> findRoleByAdminId(Integer id);-->
+    <select id="findRoleByAdminId" resultType="cn.ys.entity.Role">
+        select * from role
+        where id in
+        (select role_id from admin_role
+        where admin_id=#{id})
+    </select>
+
+<!--        List<Role> findAllPageRoles(@Param("limit1") Integer limit1, @Param("limit2") Integer limit2);
+
+    int findTotal();-->
+    <select id="findAllPageRoles" resultType="cn.ys.entity.Role">
+        select * from role order by id limit #{limit1},#{limit2}
+    </select>
+
+    <select id="findTotal" resultType="Integer">
+        select count(*) from role
+    </select>
+
+<!--        boolean addRole(Role role);-->
+    <insert id="addRole">
+        insert into role(name,available) values(#{name},#{available})
+    </insert>
+
+<!--        Role findRoleById(Integer id);-->
+    <select id="findRoleById" resultType="cn.ys.entity.Role">
+        select * from role where id=#{id}
+    </select>
+
+<!--        boolean updateRole(@Param("role") Role role,@Param("key") Integer key);-->
+    <update id="updateRole">
+        update role set name=#{role.name},available=#{role.available} where id=#{key}
+    </update>
+
+<!--        boolean deleteRoleById(Integer id);-->
+    <delete id="deleteRoleById">
+        delete from role where id=#{id}
+    </delete>
+
+<!--        boolean addMenus(List<Integer> addmenus, Integer key);
+
+    boolean deleteMenus(List<Integer> oldmenus, Integer key);-->
+    <insert id="addMenus">
+        insert into role_menu(role_id,menu_id)
+        values
+        <foreach collection="addmenus" separator="," item="menu_id">
+            (#{key},#{menu_id})
+        </foreach>
+    </insert>
+
+    <delete id="deleteMenus">
+        delete from role_menu
+        <where>
+            role_id=#{key} and
+            <if test="oldmenus!=null and oldmenus.size()>0">
+                menu_id in(
+                <foreach collection="oldmenus" separator="," item="menu_id">
+                    #{menu_id}
+                </foreach>)
+            </if>
+        </where>
+
+    </delete>
+
+</mapper>

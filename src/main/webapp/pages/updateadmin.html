@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updateadminform" action="../admin/updateadmin" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input id="username" class="easyui-textbox" name="username"  style="width:250px"
+               data-options="label:'用户名:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="pwd" class="easyui-passwordbox" name="password"  style="width:250px"
+               data-options="label:'新密码:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-passwordbox" name="rpassword"  style="width:250px"
+               data-options="label:'确认密码:',labelPosition: 'top',required:true" validtype="equals['#pwd']">
+    </div>
+    <div style="margin-bottom:20px">
+        <select id="available" class="easyui-combobox" name="available"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="状态" style="width:250px">
+            <option value="0">不可用</option>
+            <option value="1">可用</option>
+        </select>
+    </div>
+
+    <input type="hidden" id="admin_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的adminid
+    var obj=$('#update_admin_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    $("#admin_key").val(id);
+    // alert("hidden:"+$("#admin_key").val());
+    //$("input[name='adminId']").val(id);
+    // $('#birthday').datebox('setValue', '6/1/2012');   // 设置日期输入框的值
+    // alert($('#birthday').datebox('getValue'));
+
+
+    $.ajax({
+        url:"../admin/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "id":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['adminId']);
+
+            //var adminid=res.adminId;
+            //document.getElementById("cid").value=adminid;
+            //$("input[name='adminId']").textbox('setValue',res.adminId);
+            // alert(res.birthday.substring(0,10).trim());
+            //$('#id').textbox('setValue',res.id);
+
+
+            $("#username").textbox("setValue",res.username);
+            $("#available").combobox("setValue",res.available);
+            $("#pwd").textbox("setValue",res.password);
+
+            // var date = res.birthday;
+            // alert(date);
+            // alert(typeof date);
+            //$("#birthday").datebox('setValue',res.birthday.substring(0,10).trim());
+
+            // $("#birthday").datebox("setValue", "2000-11-12");
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updateadminform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_admin_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改用户信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listadmin').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改用户信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listadmin').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updateadminform').form('clear');
+    }
+
+
+    // extend the 'equals' rule
+    $.extend($.fn.validatebox.defaults.rules, {
+        equals: {
+            validator: function(value,param){
+                return value == $(param[0]).val();
+            },
+            message: '密码不一致'
+        }
+    });
+
+
+
+</script>
+</body>
+</html>

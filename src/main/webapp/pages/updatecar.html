@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updatecarform" action="../car/updatecar" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input  id="cid" class="easyui-textbox" name="carId" value="" style="width:250px" data-options="label:'车牌号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="cweight" class="easyui-numberbox" name="weight" style="width:250px" data-options="label:'车重:',labelPosition: 'top',required:true,min:0">
+    </div>
+
+    <div style="margin-bottom:20px">
+        <select id="cbatteryType" class="easyui-combobox" name="batteryType" data-options="limitToList:true,labelPosition: 'top',required:true" label="电池类型" style="width:250px"><option value="1">1类型</option><option value="2">2类型</option><option value="3">3类型</option></select>
+    </div>
+    <input type="hidden" id="car_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的carid
+    var obj=$('#update_car_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["carId"];
+    // alert("id:"+id);
+    $("#car_key").val(id);
+    // alert("hidden:"+$("#car_key").val());
+    //$("input[name='carId']").val(id);
+
+    $.ajax({
+        url:"../car/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "carId":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['carId']);
+
+            //var carid=res.carId;
+            //document.getElementById("cid").value=carid;
+            //$("input[name='carId']").textbox('setValue',res.carId);
+            $('#cid').textbox('setValue',res.carId);
+
+
+            $("#cweight").textbox("setValue",res.weight);
+
+            $("#cbatteryType").combobox('setValue',res.batteryType);
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updatecarform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_car_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改车辆信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listcar').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改车辆信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listcar').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updatecarform').form('clear');
+    }
+
+
+
+</script>
+</body>
+</html>

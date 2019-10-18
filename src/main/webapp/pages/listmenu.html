@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<table id="listmenu"></table>
+<div id="add_menu_dialog"></div>
+<div id="update_menu_dialog"></div>
+<div id="tb_menu">
+    <a href="#" class="easyui-linkbutton" onclick=addMenu() data-options="iconCls:'icon-add',plain:true">添加</a>
+    <br>
+    <input id="search_menu_id" class="easyui-textbox" prompt="功能名称" data-options="label:'功能名称:'" style="width:210px">
+    <a href="#" class="easyui-linkbutton" onclick=searchMenuById() data-options="iconCls:'icon-search',plain:true">搜索</a>
+
+
+    <!--    <input type="text" placeholder="车牌号"/>-->
+    <!--    <a id="search" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</a>-->
+</div>
+
+<script>
+    $('#listmenu').datagrid({
+        url:'../menu/findallpages',
+        method:"get",
+        columns:[[
+            {field:'id',title:'id',width:30},
+            {field:'name',title:'权限名',width:60},
+            {field:'type',title:'类型',width:60},
+            {field:'url',title:'url',width:60},
+            {field:'parentId',title:'上一级',width:30},
+            {field:'level',title:'level',width:30},
+            {field:'sort',title:'排序',width:30},
+            {field:'available',title:'状态',width:20},
+            {
+                field: 'xxx', title: '操作', width: 100,
+                formatter: function (value, row, index) {
+                    return "<a href='#' onclick=updateMenu('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=delmenu('"+row.id+"')>删除</a>"
+                }
+            }
+        ]],
+        fit:true,
+        fitColumns:true,
+        striped:true,
+        //分页工具
+        pagination:true,
+        pageList:[5,10,15,20,25,30],
+        pageSize:10,
+        pageNumber:1,
+        toolbar: '#tb_menu'
+        // toolbar: [{
+        //     iconCls: 'icon-edit',
+        //     handler: function(){alert('编辑按钮')}
+        // },'-',{
+        //     iconCls: 'icon-add',
+        //     handler: function(){alert('增加按钮')}
+        // }]
+    });
+
+
+</script>
+<script>
+
+    function addMenu() {
+        $("#add_menu_dialog").dialog({
+            modal: true,
+            title: '添加权限信息',
+            width: 450,
+            height: 660,
+            closed: false,
+            href: '../pages/addmenu.html'
+        });
+    }
+
+    function updateMenu(id) {
+        $("#update_menu_dialog").dialog({
+            modal: true,
+            title: '修改权限信息',
+            width: 450,
+            height: 660,
+            closed: false,
+            href: '../pages/updatemenu.html',
+            queryParams:{
+                "id":id
+            }
+        });
+    }
+
+    function delmenu(id) {
+        $.ajax({
+            url:"../menu/deletebyid",
+            type:"post",
+            data:{
+                "id":id
+            },
+            success:function (res) {
+                if($.trim(res)=="true"){
+                    $.messager.show({
+                        title:'删除权限信息',
+                        msg:'删除成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listmenu').datagrid("reload",true);
+                }else{
+                    $.messager.show({
+                        title:'删除权限信息',
+                        msg:'删除失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listmenu').datagrid("reload",true);
+                }
+
+            },
+            error:function (res) {
+                alert("error");
+            }
+        })
+    }
+
+    function searchMenuById() {
+        var search_menu_id = $("#search_menu_id").val();
+        // alert(search_car_id);
+        var search = new RegExp(search_menu_id);
+        // if(seacher.test("1234")){
+        //     alert("true");
+        // }else{
+        //     alert("false");
+        // }
+
+        $('#listmenu').datagrid({
+            url:'../menu/findallpages',
+            method:"get",
+            rowStyler: function(index,row){
+                if (search.test(row.name)){
+
+                    return '';
+                }else{
+
+                    return 'display:none';
+                }
+            },
+            columns:[[
+                {field:'id',title:'id',width:30},
+                {field:'name',title:'权限名',width:60},
+                {field:'type',title:'类型',width:60},
+                {field:'url',title:'url',width:60},
+                {field:'parentId',title:'上一级',width:30},
+                {field:'level',title:'level',width:30},
+                {field:'sort',title:'排序',width:30},
+                {field:'available',title:'状态',width:20},
+                {
+                    field: 'xxx', title: '操作', width: 100,
+                    formatter: function (value, row, index) {
+                        return "<a href='#' onclick=updateMenu('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=delmenu('"+row.id+"')>删除</a>"
+                    }
+                }
+            ]],
+
+            fit:true,
+            fitColumns:true,
+            striped:true,
+            //分页工具
+            pagination:true,
+            pageList:[5,10,15,20,25,30],
+            pageSize:10,
+            pageNumber:1,
+            toolbar: '#tb_menu'
+            // toolbar: [{
+            //     iconCls: 'icon-edit',
+            //     handler: function(){alert('编辑按钮')}
+            // },'-',{
+            //     iconCls: 'icon-add',
+
+            //     handler: function(){alert('增加按钮')}
+            // }]
+        });
+    }
+</script>
+</body>
+</html>

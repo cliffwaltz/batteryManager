@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<table id="listbattery"></table>
+<div id="add_battery_dialog"></div>
+<div id="update_battery_dialog"></div>
+<div id="tb_battery">
+    <a href="#" class="easyui-linkbutton" onclick=addBattery() data-options="iconCls:'icon-add',plain:true">添加</a>
+    <br>
+    <input id="search_battery_id" class="easyui-textbox" prompt="二维码" data-options="label:'二维码:'" style="width:210px">
+    <a href="#" class="easyui-linkbutton" onclick=searchBatteryById() data-options="iconCls:'icon-search',plain:true">搜索</a>
+
+
+    <!--    <input type="text" placeholder="车牌号"/>-->
+    <!--    <a id="search" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</a>-->
+</div>
+
+<script>
+    $('#listbattery').datagrid({
+        url:'../battery/findall',
+        method:"get",
+        columns:[[
+            {field:'id',title:'id',width:30},
+            {field:'type',title:'类型',width:60},
+            {field:'power',title:'电量',width:60},
+            {field:'state',title:'状态',width:40},
+            {field:'code',title:'二维码',width:100},
+            {field:'time',title:'上次修改时间',width:100},
+            {
+                field: 'xxx', title: '操作', width: 100,
+                formatter: function (value, row, index) {
+                    return "<a href='#' onclick=updateBattery('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=delbattery('"+row.id+"')>删除</a>"
+                }
+            }
+        ]],
+        fit:true,
+        fitColumns:true,
+        striped:true,
+        //分页工具
+        pagination:true,
+        pageList:[5,10,15,20,25,30],
+        pageSize:10,
+        pageNumber:1,
+        toolbar: '#tb_battery'
+        // toolbar: [{
+        //     iconCls: 'icon-edit',
+        //     handler: function(){alert('编辑按钮')}
+        // },'-',{
+        //     iconCls: 'icon-add',
+        //     handler: function(){alert('增加按钮')}
+        // }]
+    });
+
+
+</script>
+<script>
+
+    function addBattery() {
+        $("#add_battery_dialog").dialog({
+            modal: true,
+            title: '添加电池信息',
+            width: 450,
+            height: 520,
+            closed: false,
+            href: '../pages/addbattery.html'
+        });
+    }
+
+    function updateBattery(id) {
+        $("#update_battery_dialog").dialog({
+            modal: true,
+            title: '修改电池信息',
+            width: 450,
+            height: 520,
+            closed: false,
+            href: '../pages/updatebattery.html',
+            queryParams:{
+                "id":id
+            }
+        });
+    }
+
+    function delbattery(id) {
+        $.ajax({
+            url:"../battery/deletebyid",
+            type:"post",
+            data:{
+                "id":id
+            },
+            success:function (res) {
+                if($.trim(res)=="true"){
+                    $.messager.show({
+                        title:'删除电池信息',
+                        msg:'删除成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listbattery').datagrid("reload",true);
+                }else{
+                    $.messager.show({
+                        title:'删除电池信息',
+                        msg:'删除失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listbattery').datagrid("reload",true);
+                }
+
+            },
+            error:function (res) {
+                alert("error");
+            }
+        })
+    }
+
+    function searchBatteryById() {
+        var search_battery_id = $("#search_battery_id").val();
+        // alert(search_car_id);
+        var search = new RegExp(search_battery_id);
+        // if(seacher.test("1234")){
+        //     alert("true");
+        // }else{
+        //     alert("false");
+        // }
+
+        $('#listbattery').datagrid({
+            url:'../battery/findall',
+            method:"get",
+            rowStyler: function(index,row){
+                if (search.test(row.code)){
+
+                    return '';
+                }else{
+
+                    return 'display:none';
+                }
+            },
+            columns:[[
+                {field:'id',title:'id',width:30},
+                {field:'type',title:'类型',width:60},
+                {field:'power',title:'电量',width:60},
+                {field:'state',title:'状态',width:40},
+                {field:'code',title:'二维码',width:100},
+                {field:'time',title:'上次修改时间',width:100},
+                {
+                    field: 'xxx', title: '操作', width: 100,
+                    formatter: function (value, row, index) {
+                        return "<a href='#' onclick=updateBattery('"+row.id+"')>修改</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick=delbattery('"+row.id+"')>删除</a>"
+                    }
+                }
+            ]],
+
+            fit:true,
+            fitColumns:true,
+            striped:true,
+            //分页工具
+            pagination:true,
+            pageList:[5,10,15,20,25,30],
+            pageSize:10,
+            pageNumber:1,
+            toolbar: '#tb_battery'
+            // toolbar: [{
+            //     iconCls: 'icon-edit',
+            //     handler: function(){alert('编辑按钮')}
+            // },'-',{
+            //     iconCls: 'icon-add',
+            //     handler: function(){alert('增加按钮')}
+            // }]
+        });
+    }
+</script>
+</body>
+</html>

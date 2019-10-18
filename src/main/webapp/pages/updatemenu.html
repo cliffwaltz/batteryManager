@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updatemenuform" action="../menu/updatemenu" method="post" style="padding: 30px">
+    <div style="margin-bottom:5px">
+        <input id="name" class="easyui-textbox" name="name"  style="width:250px"
+               data-options="label:'权限名:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:5px">
+        <input id="type" class="easyui-textbox" name="type"  style="width:250px"
+               data-options="label:'类型:',labelPosition: 'top'">
+    </div>
+    <div style="margin-bottom:5px">
+        <input id="url" class="easyui-textbox" name="url"  style="width:250px"
+               data-options="label:'url:',labelPosition: 'top'">
+    </div>
+    <div style="margin-bottom:5px">
+        <input id="parentId" class="easyui-numberbox" name="parentId" style="width:250px"
+               data-options="label:'上一级:',labelPosition: 'top',required:true,min:0">
+    </div>
+
+    <div style="margin-bottom:5px">
+        <select id="level" class="easyui-combobox" name="level"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="level" style="width:250px">
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+    </div>
+
+    <div style="margin-bottom:5px">
+        <input id="sort" class="easyui-numberbox" name="sort" style="width:250px"
+               data-options="label:'排序:',labelPosition: 'top',required:true,min:0">
+    </div>
+    <div style="margin-bottom:5px">
+        <select id="available" class="easyui-combobox" name="available"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="状态" style="width:250px">
+            <option value="1">可用</option>
+            <option value="0">不可用</option>
+        </select>
+    </div>
+    <input type="hidden" id="menu_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的menuid
+    var obj=$('#update_menu_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    $("#menu_key").val(id);
+    // alert("hidden:"+$("#menu_key").val());
+    //$("input[name='menuId']").val(id);
+    // $('#birthday').datebox('setValue', '6/1/2012');   // 设置日期输入框的值
+    // alert($('#birthday').datebox('getValue'));
+
+
+    $.ajax({
+        url:"../menu/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "id":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['menuId']);
+
+            //var menuid=res.menuId;
+            //document.getElementById("cid").value=menuid;
+            //$("input[name='menuId']").textbox('setValue',res.menuId);
+            // alert(res.birthday.substring(0,10).trim());
+            //$('#id').textbox('setValue',res.id);
+
+
+            $("#name").textbox("setValue",res.name);
+            $("#type").textbox("setValue",res.type);
+            $("#url").textbox("setValue",res.url);
+            $("#parentId").numberbox("setValue",res.parentId);
+            $("#level").combobox("setValue",res.level);
+            $("#sort").numberbox("setValue",res.sort);
+            $("#available").combobox("setValue",res.available);
+
+            // var date = res.birthday;
+            // alert(date);
+            // alert(typeof date);
+            //$("#birthday").datebox('setValue',res.birthday.substring(0,10).trim());
+
+            // $("#birthday").datebox("setValue", "2000-11-12");
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updatemenuform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_menu_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listmenu').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改权限信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listmenu').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updatemenuform').form('clear');
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

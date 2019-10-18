@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ys.dao.BatteryMapper">
+
+<!--    //根据id查询电池
+    public battery findbatteryById(String id);
+
+-->
+    <select id="findBatteryById" resultType="cn.ys.entity.Battery">
+        select * from battery where id=#{id}
+    </select>
+
+<!--        //查询所有电池信息
+    public List<Battery> findAll();-->
+    <select id="findAll" resultType="cn.ys.entity.Battery">
+        select * from battery order by type limit #{limit1},#{limit2}
+    </select>
+
+<!--        //查询记录总数
+    public int findTotal();-->
+    <select id="findTotal" resultType="Integer">
+        select count(*) from battery
+    </select>
+
+<!--        //增加电池信息
+    public boolean addBattery(Battery battery);-->
+    <insert id="addBattery">
+        insert into battery(type,code,state,power,time) values(#{type},#{code},#{state},#{power},now())
+    </insert>
+
+<!--        //删除电池by id
+    public boolean deleteBatteryById(String id);-->
+    <delete id="deleteBatteryById">
+        delete from battery where id=#{id}
+    </delete>
+
+<!--        //修改电池信息
+    public boolean updateBattery(@Param("battery") Battery battery,@Param("key") String key);-->
+    <update id="updateBattery">
+        update battery set type=#{battery.type},code=#{battery.code},state=#{battery.state},power=#{battery.power},time=now()  where id=#{key};
+    </update>
+</mapper>

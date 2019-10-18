@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updaterecordform" action="../record/updaterecord" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input id="userId" class="easyui-textbox" name="userId" addClear style="width:250px"
+               data-options="label:'车主身份证号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="carId" class="easyui-textbox" name="carId" addClear style="width:250px"
+               data-options="label:'车牌号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <select id="type" class="easyui-combobox" name="type"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="电池类型" style="width:250px">
+            <option value="1">1类型</option>
+            <option value="2">2类型</option>
+            <option value="3">3类型</option>
+        </select>
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="code" class="easyui-textbox" name="code" addClear style="width:250px"
+               data-options="label:'二维码:',labelPosition: 'top'">
+    </div>
+    <input type="hidden" id="record_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的recordid
+    var obj=$('#update_record_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    // alert("id:"+id);
+    $("#record_key").val(id);
+    // alert("hidden:"+$("#record_key").val());
+    //$("input[name='recordId']").val(id);
+    // $('#birthday').datebox('setValue', '6/1/2012');   // 设置日期输入框的值
+    // alert($('#birthday').datebox('getValue'));
+
+
+    $.ajax({
+        url:"../record/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "id":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['recordId']);
+
+            //var recordid=res.recordId;
+            //document.getElementById("cid").value=recordid;
+            //$("input[name='recordId']").textbox('setValue',res.recordId);
+            // alert(res.birthday.substring(0,10).trim());
+            //$('#id').textbox('setValue',res.id);
+
+
+            $("#carId").textbox("setValue",res.carId);
+            $("#userId").textbox("setValue",res.userId);
+            $("#type").combobox("setValue",res.type);
+            $("#code").textbox("setValue",res.code);
+
+            // var date = res.birthday;
+            // alert(date);
+            // alert(typeof date);
+            //$("#birthday").datebox('setValue',res.birthday.substring(0,10).trim());
+
+            // $("#birthday").datebox("setValue", "2000-11-12");
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updaterecordform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_record_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改记录信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrecord').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改记录信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listrecord').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updaterecordform').form('clear');
+    }
+
+
+</script>
+</body>
+</html>

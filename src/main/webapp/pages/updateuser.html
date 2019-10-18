@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="updateuserform" action="../user/updateuser" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input id="id" class="easyui-textbox" name="id"  style="width:250px" data-options="label:'身份证号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input id="name" class="easyui-textbox" name="name" style="width:250px" data-options="label:'姓名:',labelPosition: 'top',required:true">
+    </div>
+
+    <div style="margin-bottom:20px">
+        <input type="text" id="birthday" name="birthday" class="easyui-datebox" editable="false" data-options="label:'出生日期:',labelPosition: 'top',required:true">
+    </div>
+    <input type="hidden" id="user_key" name="key">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的carid
+    var obj=$('#update_user_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var id =  queryParams["id"];
+    //alert("id:"+id);
+    $("#user_key").val(id);
+    // alert("hidden:"+$("#user_key").val());
+    //$("input[name='carId']").val(id);
+    // $('#birthday').datebox('setValue', '6/1/2012');   // 设置日期输入框的值
+    // alert($('#birthday').datebox('getValue'));
+
+
+    $.ajax({
+        url:"../user/findonebyid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "id":id
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['carId']);
+
+            //var carid=res.carId;
+            //document.getElementById("cid").value=carid;
+            //$("input[name='carId']").textbox('setValue',res.carId);
+            // alert(res.birthday.substring(0,10).trim());
+            $('#id').textbox('setValue',res.id);
+
+
+            $("#name").textbox("setValue",res.name);
+            // var date = res.birthday;
+            // alert(date);
+            // alert(typeof date);
+            $("#birthday").datebox('setValue',res.birthday.substring(0,10).trim());
+
+            // $("#birthday").datebox("setValue", "2000-11-12");
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+            alert("服务器出错");
+        }
+    })
+
+    function submitForm(){
+        $('#updateuserform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#update_user_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'修改车主信息',
+                        msg:'修改成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'修改车主信息',
+                        msg:'修改失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listuser').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#updateuserform').form('clear');
+    }
+
+    $.fn.datebox.defaults.formatter = function(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        return y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d);
+    };
+    //
+    $.fn.datebox.defaults.parser = function(s) {
+        if (s) {
+            var a = s.split('-');
+            var d = new Date(parseInt(a[0]), parseInt(a[1]) - 1, parseInt(a[2]));
+            return d;
+        } else {
+            return new Date();
+        }
+
+    };
+
+
+
+</script>
+</body>
+</html>

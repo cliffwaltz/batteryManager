@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="addrecordform" action="../record/addrecord" method="post" style="padding: 50px">
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" name="userId" addClear style="width:250px"
+               data-options="label:'车主身份证号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" name="carId" addClear style="width:250px"
+               data-options="label:'车牌号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <select class="easyui-combobox" name="type"
+                data-options="value:'',limitToList:true,labelPosition: 'top',required:true" label="电池类型" style="width:250px">
+            <option value="1">1类型</option>
+            <option value="2">2类型</option>
+            <option value="3">3类型</option>
+        </select>
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" name="code" addClear style="width:250px"
+               data-options="label:'二维码:',labelPosition: 'top'">
+    </div>
+
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+
+    function submitForm() {
+        $('#addrecordform').form('submit', {
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success: function (data) {
+                if ($.trim(data) == "true") {
+                    $("#add_record_dialog").dialog("close", true);
+                    $.messager.show({
+                        title: '添加记录信息',
+                        msg: '添加成功！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listrecord').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                } else {
+                    $.messager.show({
+                        title: '添加记录信息',
+                        msg: '添加失败！',
+                        showType: 'fade',
+                        timeout: 3000
+                    });
+                    $('#listrecord').datagrid("reload", true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+
+    function clearForm() {
+        $('#addrecordform').form('clear');
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<html>
+
+<head>
+    <title>登录</title>
+    <meta charset="UTF-8" />
+    <!--
+        EasyUI使用:
+            1 将EasyUI提供的js文件和主题（themes）样式存放到项目的指定位置
+            2 在Html文档中引入EasyUI的插件
+            3在HTML文档标签上遵循EasyUI的文档规则使用EasyUI完成页面的开发
+
+        面板使用(panel)：
+            创建面板：
+                在创建一个div标签，并class属性值为："easyui-panel"
+            面板属性:
+                title:添加面板标题
+                data-options：给面板添加常用的操作。具体参照API
+                添加按钮
+            信息提示
+        注意：
+            EasyUI的使用
+                通过标签的class属性添加基本EasyUI功能，包括样式和jQuery操作
+                data-options属性对标签的基本功能进行修改操作
+    -->
+    <!--引入主题样式-->
+    <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/css/easyui.css">
+    <link rel="stylesheet" type="text/css" href="resources/css/icon.css">
+    <script type="text/javascript" src="resources/js/jquery.min.js"></script>
+    <script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="resources/js/jquery.easyui.min.js"></script>
+    <!--声明css代码域-->
+    <STYLE type=text/css>
+        BODY {
+            TEXT-ALIGN: center;
+            PADDING-BOTTOM: 0px;
+            BACKGROUND-COLOR: #ddeef2;
+            MARGIN: 0px;
+            PADDING-LEFT: 0px;
+            PADDING-RIGHT: 0px;
+            PADDING-TOP: 0px
+        }
+
+
+        A:link {
+            COLOR: #000000;
+            TEXT-DECORATION: none
+        }
+
+
+        A:visited {
+            COLOR: #000000;
+            TEXT-DECORATION: none
+        }
+
+
+        A:hover {
+            COLOR: #ff0000;
+            TEXT-DECORATION: underline
+        }
+
+
+        A:active {
+            TEXT-DECORATION: none
+        }
+
+
+        .input {
+            BORDER-BOTTOM: #ccc 1px solid;
+            BORDER-LEFT: #ccc 1px solid;
+            LINE-HEIGHT: 20px;
+            WIDTH: 182px;
+            HEIGHT: 20px;
+            BORDER-TOP: #ccc 1px solid;
+            BORDER-RIGHT: #ccc 1px solid
+        }
+
+
+        .input1 {
+            BORDER-BOTTOM: #ccc 1px solid;
+            BORDER-LEFT: #ccc 1px solid;
+            LINE-HEIGHT: 20px;
+            WIDTH: 120px;
+            HEIGHT: 20px;
+            BORDER-TOP: #ccc 1px solid;
+            BORDER-RIGHT: #ccc 1px solid;
+        }
+    </STYLE>
+    <script type="text/javascript">
+        function login(){
+            var userName=$("#userName").val();
+            var password=$("#password").val();
+            var roleName=$("#roleName").val();
+            if(userName==null||userName==""){
+                alert("用户名不能为空！");
+                return;
+            }
+            if(password==null||password==""){
+                alert("密码不能为空！");
+                return;
+            }
+            if(roleName==null||roleName==""){
+                alert("请选择用户类型！");
+                return;
+            }
+            $("#adminlogin").submit();
+
+        }
+    </script>
+</head>
+<body>
+<FORM id="adminlogin"  method="post" name="adminlogin" action="${pageContext.request.contextPath}/userController/loginUser.do"  >
+    <DIV></DIV>
+    <TABLE style="MARGIN: auto; WIDTH: 100%; HEIGHT: 100%" border=0
+           cellSpacing=0 cellPadding=0>
+        <TBODY>
+        <TR>
+            <TD height=150>&nbsp;</TD>
+        </TR>
+        <TR style="HEIGHT: 254px">
+            <TD>
+                <DIV style="MARGIN: 0px auto; WIDTH: 936px"><IMG
+                        style="DISPLAY: block" src="${pageContext.request.contextPath}/images/body_03.jpg"></DIV>
+                <DIV style="BACKGROUND-COLOR: #278296">
+                    <DIV style="MARGIN: 0px auto; WIDTH: 936px">
+                        <DIV
+                                style="BACKGROUND: url(${pageContext.request.contextPath}/images/body_05.jpg) no-repeat; HEIGHT: 155px">
+                            <DIV
+                                    style="TEXT-ALIGN: left; WIDTH: 265px; FLOAT: right; HEIGHT: 125px; _height: 95px">
+                                <TABLE border=0 cellSpacing=0 cellPadding=0 width="100%">
+                                    <TBODY>
+                                    <TR>
+                                        <TD style="HEIGHT: 45px"><INPUT type="text" class=input value="${user.userName }" name="userName" id="userName"></TD>
+                                    </TR>
+                                    <TR>
+                                        <TD><INPUT type="password" class=input value="${user.password }" name="password" id="password"/></TD>
+                                    </TR>
+                                    <TR>
+                                        <td>
+                                            <select id="roleName" name="roleName" class="input" style="margin-top: 15px;height: 24px">
+                                                <option value="">请选择用户类型...</option>
+                                                <option value="系统管理员"  ${'系统管理员'==user.roleName?'selected':'' }>系统管理员</option>
+                                                <option value="销售主管"  ${'销售主管'==user.roleName?'selected':'' }>销售主管</option>
+                                                <option value="客户经理"  ${'客户经理'==user.roleName?'selected':'' }>客户经理</option>
+                                                <option value="高管"  ${'高管'==user.roleName?'selected':'' }>高管</option>
+                                            </select>
+                                        </td>
+                                    </TR>
+                                    </TBODY>
+                                </TABLE>
+                            </DIV>
+                            <DIV style="HEIGHT: 1px; CLEAR: both"></DIV>
+                            <DIV style="WIDTH: 380px; FLOAT: right; CLEAR: both">
+                                <TABLE border=0 cellSpacing=0 cellPadding=0 width=300>
+                                    <TBODY>
+
+                                    <TR>
+                                        <TD width=100 align=right><INPUT
+                                                style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px"
+                                                id=btnLogin src="${pageContext.request.contextPath}/images/btn1.jpg" type=image name=btnLogin οnclick="javascript:login();return false;"></TD>
+                                        <TD width=100 align=middle><INPUT
+                                                style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px"
+                                                id=btnReset src="${pageContext.request.contextPath}/images/btn2.jpg" type=image name=btnReset οnclick="javascript:adminlogin.reset();return false;"></TD>
+                                    </TR>
+                                    </TBODY>
+                                </TABLE>
+                            </DIV>
+                        </DIV>
+                    </DIV>
+                </DIV>
+                <DIV style="MARGIN: 0px auto; WIDTH: 936px"><IMG
+                        src="${pageContext.request.contextPath}/images/body_06.jpg"></DIV>
+            </TD>
+        </TR>
+        <TR style="HEIGHT: 30%">
+            <TD>&nbsp;</TD>
+        </TR>
+        </TBODY>
+    </TABLE>
+</FORM>
+</body>
+</html>
+<script type=text/javascript>
+    if('${errormsg}'!=''){
+        alert('${errormsg}');
+    }
+</script>

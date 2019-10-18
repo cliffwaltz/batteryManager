@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<form id="binduserform" action="../car/binduser" method="post" style="padding: 30px">
+    <div style="margin-bottom:20px">
+        <input  class="easyui-textbox" name="id" id="bind_id" style="width:250px" data-options="label:'身份证号:',labelPosition: 'top',required:true">
+    </div>
+    <div style="margin-bottom:20px">
+        <input  class="easyui-textbox" name="name" id="bind_name" style="width:250px" data-options="label:'姓名:',labelPosition: 'top',required:true">
+    </div>
+
+    <div style="margin-bottom:20px">
+        <input type="text" name="birthday" id="bind_birthday" class="easyui-datebox" editable="false" data-options="label:'出生日期:',labelPosition: 'top',required:true">
+    </div>
+
+    <input type="hidden" id="bind_carId" name="carId">
+    <input type="hidden" id="bind_userId" name="userId">
+</form>
+<div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">清空</a>
+</div>
+
+<script>
+    //获取传递过来的carid
+    var obj=$('#bind_user_dialog').dialog('options');
+    var queryParams = obj["queryParams"];
+    var carId =  queryParams["carId"];
+    var userId =  queryParams["userId"];
+    // alert("id:"+id);
+    $("#bind_carId").val(carId);
+    $("#bind_userId").val(userId);
+    // alert("hidden:"+$("#car_key").val());
+    //$("input[name='carId']").val(id);
+
+    $.ajax({
+        url:"../car/finduserbycarid",
+        type:"get",
+        dataType:"json",
+        data:{
+            "carId":carId
+        },
+        success:function (res) {
+            //alert(res.weight);
+            //alert($("#cid").val());
+            //$('#cid').val(res['carId']);
+
+            //var carid=res.carId;
+            //document.getElementById("cid").value=carid;
+            //$("input[name='carId']").textbox('setValue',res.carId);
+            $('#bind_id').textbox('setValue',res.id);
+
+
+            $("#bind_name").textbox("setValue",res.name);
+
+            $("#bind_birthday").datebox('setValue',res.birthday);
+
+            //alert($("input[name='weight']").val());
+        },
+        error:function(){
+
+        }
+    })
+
+    function submitForm(){
+        $('#binduserform').form('submit',{
+            onSubmit:function(){
+                $(".easyui-linkbutton").linkbutton('disable');
+            },
+            success:function(data){
+                if($.trim(data)=="true"){
+                    $("#bind_user_dialog").dialog("close",true);
+                    $.messager.show({
+                        title:'绑定车主信息',
+                        msg:'绑定成功！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listcar').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }else{
+                    $.messager.show({
+                        title:'绑定车主信息',
+                        msg:'绑定失败！',
+                        showType:'fade',
+                        timeout:3000
+                    });
+                    $('#listcar').datagrid("reload",true);
+                    $(".easyui-linkbutton").linkbutton('enable');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#binduserform').form('clear');
+    }
+
+
+    $.fn.datebox.defaults.formatter = function(date) {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        return y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d);
+    };
+    //
+    $.fn.datebox.defaults.parser = function(s) {
+        if (s) {
+            var a = s.split('-');
+            var d = new Date(parseInt(a[0]), parseInt(a[1]) - 1, parseInt(a[2]));
+            return d;
+        } else {
+            return new Date();
+        }
+
+    };
+
+
+
+
+</script>
+</body>
+</html>
